@@ -1,0 +1,12 @@
+# Reuses the shared TypeScript pipeline (Biome lint + pnpm build + pnpm test).
+# Pin to a release tag once the shared templates are versioned.
+include:
+  - project: "quality-game-core/shared/ci-templates"
+    ref: main
+    file: "/pipelines/typescript-mini.yml"
+
+build:
+  artifacts:
+    paths:
+      - dist/bundle.gs
+    expire_in: 30 days

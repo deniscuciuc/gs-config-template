@@ -1,0 +1,20 @@
+node_modules/
+dist/
+coverage/
+
+# pnpm
+pnpm-lock.yaml
+.pnpm-store/
+
+# misc
+.DS_Store
+*.log
+.env
+.env.*
+
+# editors
+.vscode/
+.idea/
+
+# clasp
+.clasp.json
