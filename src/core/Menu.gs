@@ -20,6 +20,7 @@ function buildMainMenu_() {
     .addSeparator()
     .addItem('Validate All Sheets', 'validateAllSheets')
     .addItem('Repair All Sheets', 'repairAllSheets')
+    .addItem('Reorder Sheets', 'reorderSheets')
     .addItem('Health Dashboard', 'showHealthDashboard')
     .addSeparator()
     .addItem('Generate Sheet ID', 'generateSheetItemId')

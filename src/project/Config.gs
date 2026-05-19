@@ -35,6 +35,21 @@ const ALL_MIGRATIONS = [
 ];
 
 /**
+ * Desired tab order and optional tab colours.
+ * Sheets not listed here will be placed after the listed ones:
+ *   - sheets whose names start with '_' come next (sorted alphabetically)
+ *   - any other unlisted sheets are appended last in their current order
+ *
+ * Each entry: { name: 'SheetName' }  — no colour
+ *          or: { name: 'SheetName', color: '#4a86e8' }  — with tab colour
+ */
+const SHEET_LAYOUT = [
+  // Define your desired sheet order here, e.g.:
+  // { name: 'Games' },
+  // { name: 'Tournaments', color: '#4a86e8' },
+];
+
+/**
  * Expected per-sheet schema. Used by validateAllSheets() and repairAllSheets().
  * Each entry: { columns: string[], required: string[] }
  */
@@ -184,7 +199,13 @@ function repairAllSheets() {
     }
   }
   p.finish('Done');
+  applySheetLayout_(SHEET_LAYOUT);
   showAlert('Repair', '✅ Repaired ' + actions.length + ' sheet(s).');
+}
+
+function reorderSheets() {
+  applySheetLayout_(SHEET_LAYOUT);
+  showAlert('Reorder Sheets', '✅ Sheets reordered.');
 }
 
 function removeAllConfigSheets() {
