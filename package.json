@@ -33,13 +33,31 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
-    "jest": "^29.7.0"
+    "jest": "^30.5.2"
   },
   "jest": {
     "testEnvironment": "node",
-    "testMatch": ["**/test/**/*.test.js"],
-    "setupFiles": ["./test/__mocks__/SpreadsheetApp.js"],
-    "collectCoverageFrom": ["scripts/**/*.js"],
-    "coverageReporters": ["text", "lcov"]
+    "testMatch": [
+      "**/test/**/*.test.js"
+    ],
+    "setupFiles": [
+      "./test/__mocks__/SpreadsheetApp.js"
+    ],
+    "collectCoverageFrom": [
+      "scripts/**/*.js"
+    ],
+    "coverageReporters": [
+      "text",
+      "lcov"
+    ]
+  },
+  "pnpm": {
+    "overrides": {
+      "js-yaml@<3.15.2": ">=3.15.2",
+      "brace-expansion@<1.1.16": ">=1.1.16",
+      "browserslist@<4.28.7": ">=4.28.7",
+      "baseline-browser-mapping@<2.11.0": ">=2.11.0",
+      "@babel/core@<7.29.6": ">=7.29.6"
+    }
   }
 }

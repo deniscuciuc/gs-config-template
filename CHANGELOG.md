@@ -55,6 +55,11 @@ dashboard, and a build that concatenates it all into one file you paste into App
 - The build stamp is the tag or commit rather than a timestamp, so the same sources produce
   a byte-identical bundle and a released bundle can be checked against its tag.
 - The `ci` script is now `verify`. `pnpm ci` is a reserved pnpm command and never ran it.
+- Jest moved to 30, and five transitive development dependencies are pinned to their
+  patched versions through `pnpm.overrides`. Enabling Dependabot surfaced eight open
+  advisories, all development-scope and all reached through Jest 29, which held them
+  below the fixed versions. Nothing shipped in the bundle was affected — it has no
+  runtime dependencies — but a template should not hand its adopters a red security tab.
 
 ### Fixed
 
