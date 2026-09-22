@@ -101,6 +101,20 @@ not collected rather than reported as a falsehood. The suites do exercise `src/`
 can measure it. Making that measurable means replacing the loader, which is a real piece of
 work and a welcome one.
 
+## Dependencies
+
+There are no runtime dependencies — the bundle ships no third-party code. The development
+dependencies are Biome and Jest, and `pnpm.overrides` in `package.json` pins five packages
+Jest reaches transitively to their patched versions.
+
+One of those pins is deliberately narrow. `@babel/core` is constrained to `^7.29.6` rather
+than `>=7.29.6`, because 8.x is ESM-only while `babel-jest` still `require()`s it — which
+fails on Node 20.12, the floor this project declares. Node 22 and later can `require()` an
+ES module, so the only place it breaks is the oldest supported version. That is the reason
+the CI matrix includes a 20.12 leg; it caught exactly this.
+
+Widen that pin only together with a matching change to `engines.node`.
+
 ## Pull requests
 
 - Keep a PR to a single concern.

@@ -57,7 +57,7 @@
       "brace-expansion@<1.1.16": ">=1.1.16",
       "browserslist@<4.28.7": ">=4.28.7",
       "baseline-browser-mapping@<2.11.0": ">=2.11.0",
-      "@babel/core@<7.29.6": ">=7.29.6"
+      "@babel/core@<7.29.6": "^7.29.6"
     }
   }
 }
