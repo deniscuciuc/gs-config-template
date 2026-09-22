@@ -23,10 +23,10 @@ jobs:
       - uses: actions/checkout@v7
       # pnpm/action-setup has to come first: setup-node's `cache: pnpm` shells out to pnpm
       # to find the store path and fails if pnpm is not on PATH yet.
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v6
         # No version pinned here on purpose — it comes from `packageManager` in
         # package.json, and naming it in two places is how the two drift apart.
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: '22'
           # Caches the pnpm store keyed on the pnpm-lock.yaml hash; setup-node computes the
@@ -58,8 +58,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v7
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v6
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: ${{ matrix.node }}
           cache: pnpm
@@ -75,8 +75,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v6
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: '22'
           cache: pnpm
