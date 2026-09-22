@@ -1,5 +1,5 @@
-const migration_202506160001_use_slug_game_ids = {
-  id: '202506160001_use_slug_game_ids',
+const migration_202505030001_use_slug_game_ids = {
+  id: '202505030001_use_slug_game_ids',
   description: 'Migrate Games.Id values to slug form (lowercase, hyphenated).',
   up: function () {
     var sheet = getSheet('Games');

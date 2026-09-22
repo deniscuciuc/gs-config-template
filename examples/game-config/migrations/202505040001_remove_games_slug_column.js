@@ -1,5 +1,5 @@
-const migration_202506170001_remove_games_slug_column = {
-  id: '202506170001_remove_games_slug_column',
+const migration_202505040001_remove_games_slug_column = {
+  id: '202505040001_remove_games_slug_column',
   description: 'Remove redundant Games.Slug column (Id is now the slug).',
   up: function () {
     var sheet = getSheet('Games');

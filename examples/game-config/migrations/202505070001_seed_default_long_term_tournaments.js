@@ -1,5 +1,5 @@
-const migration_202605060001_seed_default_long_term_tournaments = {
-  id: '202605060001_seed_default_long_term_tournaments',
+const migration_202505070001_seed_default_long_term_tournaments = {
+  id: '202505070001_seed_default_long_term_tournaments',
   description: 'Seed default long-term tournaments and reward ladder.',
   up: function () {
     createTournamentsSheet_();
@@ -52,11 +52,11 @@ const migration_202605060001_seed_default_long_term_tournaments = {
     // composite key — emulate by joining
     var sheet = getSheet('TournamentRewards');
     if (sheet && sheet.getLastRow() < 2) {
-      sheet
-        .getRange(2, 1, rewardRows.length, 5)
-        .setValues(rewardRows.map(function (r) {
+      sheet.getRange(2, 1, rewardRows.length, 5).setValues(
+        rewardRows.map(function (r) {
           return [r.TournamentId, r.Position, r.RewardCurrency, r.RewardAmount, r.RewardItemId];
-        }));
+        })
+      );
     }
   },
 };

@@ -1,11 +1,11 @@
 const { loadGsFiles } = require('./__mocks__/loader');
 
 const CORE_FILES = [
-  'core/Core.gs',
-  'core/Utilities.gs',
-  'core/Validation.gs',
-  'core/ProgressUI.gs',
-  'core/MigrationRunner.gs',
+  'core/Core.js',
+  'core/Utilities.js',
+  'core/Validation.js',
+  'core/ProgressUI.js',
+  'core/MigrationRunner.js',
 ];
 
 describe('MigrationRunner', () => {

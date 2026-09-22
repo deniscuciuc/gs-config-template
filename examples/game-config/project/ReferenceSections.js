@@ -1,9 +1,8 @@
 /**
- * ReferenceSheet.gs — data-driven _Reference sheet.
+ * ReferenceSections.js — content for the `_Reference` sheet.
  *
- * One generic renderSection_() loop walks REFERENCE_SECTIONS to produce the
- * full sheet. Adding a section means appending a single object — no copy-paste
- * formatting blocks per section.
+ * Plain data. The renderer lives in src/core/ReferenceSheet.js and never changes; this is
+ * the half you rewrite for your own domain.
  */
 
 const REFERENCE_SECTIONS = [
@@ -94,7 +93,7 @@ const REFERENCE_SECTIONS = [
     title: 'LOCALIZATION CONTEXT VARIABLES',
     columns: ['Variable', 'Description'],
     rows: [
-      ['{playerName}', 'Replaced with the player\'s display name.'],
+      ['{playerName}', "Replaced with the player's display name."],
       ['{amount}', 'Numeric amount in reward/cost messages.'],
       ['{currency}', 'Currency code in reward/cost messages.'],
       ['{gameName}', 'Display name of the relevant game.'],
@@ -102,64 +101,3 @@ const REFERENCE_SECTIONS = [
     ],
   },
 ];
-
-function createReferenceSheet_() {
-  var ss = getSpreadsheet();
-  var sheet = ss.getSheetByName('_Reference');
-  if (sheet) ss.deleteSheet(sheet);
-  sheet = ss.insertSheet('_Reference');
-  configureReferenceSheet_(sheet);
-  return sheet;
-}
-
-function configureReferenceSheet_(sheet) {
-  sheet = sheet || getSheet('_Reference');
-  if (!sheet) return;
-  // Clear contents to make this idempotent.
-  sheet.clearContents();
-  sheet.clearFormats();
-
-  var row = 1;
-  var maxCols = 2;
-  for (var i = 0; i < REFERENCE_SECTIONS.length; i++) {
-    row = renderSection_(sheet, row, REFERENCE_SECTIONS[i]);
-    row += 1; // blank line between sections
-  }
-  sheet.setColumnWidth(1, 320);
-  sheet.setColumnWidth(2, 520);
-  sheet.setFrozenRows(0);
-  trimSheet_(sheet, row, maxCols);
-}
-
-function renderSection_(sheet, startRow, section) {
-  // Title row (merged).
-  sheet
-    .getRange(startRow, 1, 1, 2)
-    .merge()
-    .setValue(section.title)
-    .setFontWeight('bold')
-    .setFontColor(SECTION_FG)
-    .setBackground(SECTION_BG)
-    .setHorizontalAlignment('center');
-  startRow += 1;
-
-  // Column header.
-  sheet
-    .getRange(startRow, 1, 1, section.columns.length)
-    .setValues([section.columns])
-    .setFontWeight('bold')
-    .setBackground(HEADER_BG)
-    .setFontColor(HEADER_FG);
-  startRow += 1;
-
-  // Data rows.
-  if (section.rows.length > 0) {
-    sheet.getRange(startRow, 1, section.rows.length, section.columns.length).setValues(section.rows);
-    for (var i = 0; i < section.rows.length; i++) {
-      var bg = i % 2 === 0 ? ROW_EVEN : ROW_ODD;
-      sheet.getRange(startRow + i, 1, 1, section.columns.length).setBackground(bg).setWrap(true);
-    }
-    startRow += section.rows.length;
-  }
-  return startRow;
-}

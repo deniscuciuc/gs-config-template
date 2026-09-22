@@ -1,11 +1,11 @@
 /**
- * Plugin template — copy this file, rename to plugin_<short_name>.gs
+ * Plugin template — copy this file, rename to plugin_<short_name>.js
  *
- * A plugin is a self-contained .gs file that:
+ * A plugin is a self-contained .js file that:
  *   1. Implements one or more top-level functions to do work.
  *   2. Registers them in the spreadsheet menu by pushing onto PLUGIN_MENU_ITEMS.
  *
- * Use only the public API documented in src/core/PluginApi.gs:
+ * Use only the public API documented in src/core/PluginApi.js:
  *   getSpreadsheet, getSheet, getOrCreateSheet, showAlert,
  *   beginProgress, readRows, writeRows, upsertRowsByKey, ensureColumn,
  *   translateBatch

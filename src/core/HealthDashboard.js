@@ -15,16 +15,23 @@ function showHealthDashboard() {
   sheet = ss.insertSheet(HEALTH_SHEET_NAME);
 
   var rows = [];
-  rows.push(['Quality Game Core — Config Health', '', '', '']);
+  // Same defensive-lookup shape used for ALL_MIGRATIONS below: core must keep working
+  // when the project layer has not defined the optional global.
+  var title =
+    typeof PROJECT_NAME === 'string' && PROJECT_NAME
+      ? PROJECT_NAME + ' — Config Health'
+      : 'Config Health';
+  rows.push([title, '', '', '']);
   rows.push(['Generated', new Date().toISOString(), '', '']);
   rows.push(['', '', '', '']);
 
   // Migrations
-  var registered = (typeof ALL_MIGRATIONS !== 'undefined' && Array.isArray(ALL_MIGRATIONS))
-    ? ALL_MIGRATIONS
-    : [];
+  var registered =
+    typeof ALL_MIGRATIONS !== 'undefined' && Array.isArray(ALL_MIGRATIONS) ? ALL_MIGRATIONS : [];
   var applied = getAppliedMigrationIds_();
-  var pending = registered.filter(function (m) { return !applied.has(m.id); });
+  var pending = registered.filter(function (m) {
+    return !applied.has(m.id);
+  });
   rows.push(['Migrations', '', '', '']);
   rows.push(['  Registered', registered.length, '', '']);
   rows.push(['  Applied', applied.size, '', '']);
@@ -33,9 +40,8 @@ function showHealthDashboard() {
 
   // Sheet presence
   rows.push(['Sheets', 'Present', 'Rows', 'Status']);
-  var expected = (typeof ALL_SHEET_NAMES !== 'undefined' && Array.isArray(ALL_SHEET_NAMES))
-    ? ALL_SHEET_NAMES
-    : [];
+  var expected =
+    typeof ALL_SHEET_NAMES !== 'undefined' && Array.isArray(ALL_SHEET_NAMES) ? ALL_SHEET_NAMES : [];
   for (var i = 0; i < expected.length; i++) {
     var name = expected[i];
     var s = ss.getSheetByName(name);
@@ -55,9 +61,14 @@ function showHealthDashboard() {
       validationErrors = collectValidationErrors_();
     }
   } catch (e) {
-    validationErrors = ['validation failed: ' + (e && e.message ? e.message : e)];
+    validationErrors = ['validation failed: ' + (e?.message ? e.message : e)];
   }
-  rows.push(['Validation', validationErrors.length === 0 ? '✅ pass' : '❌ ' + validationErrors.length + ' error(s)', '', '']);
+  rows.push([
+    'Validation',
+    validationErrors.length === 0 ? '✅ pass' : '❌ ' + validationErrors.length + ' error(s)',
+    '',
+    '',
+  ]);
   for (var k = 0; k < Math.min(validationErrors.length, 50); k++) {
     rows.push(['  ' + validationErrors[k], '', '', '']);
   }

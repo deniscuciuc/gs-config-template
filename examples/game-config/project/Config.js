@@ -1,9 +1,15 @@
 /**
- * Config.gs — project-specific configuration.
+ * Config.js — project-specific configuration.
  *
  * Lists the sheets the template manages and the migrations it applies.
  * Migrations are run in the order they appear in ALL_MIGRATIONS.
  */
+
+/** Shown in the health dashboard header. */
+const PROJECT_NAME = 'Game Config';
+
+/** The custom menu label, as it appears in the Google Sheets menu bar. */
+const MENU_TITLE = '⚙️ Game Config';
 
 const ALL_SHEET_NAMES = [
   'Localization',
@@ -24,14 +30,14 @@ const ALL_SHEET_NAMES = [
 ];
 
 const ALL_MIGRATIONS = [
-  migration_202604280001_initial_setup,
-  migration_202506150001_add_games_integration_sheet,
-  migration_202506160001_use_slug_game_ids,
-  migration_202506170001_remove_games_slug_column,
+  migration_202505010001_initial_setup,
+  migration_202505020001_add_games_integration_sheet,
+  migration_202505030001_use_slug_game_ids,
+  migration_202505040001_remove_games_slug_column,
   migration_202505050001_seed_default_check_in_schedule,
   migration_202505050002_fortune_wheel_spin_type,
-  migration_202506180001_add_tournament_priority,
-  migration_202605060001_seed_default_long_term_tournaments,
+  migration_202505060001_add_tournament_priority,
+  migration_202505070001_seed_default_long_term_tournaments,
 ];
 
 /**
@@ -44,9 +50,20 @@ const ALL_MIGRATIONS = [
  *          or: { name: 'SheetName', color: '#4a86e8' }  — with tab colour
  */
 const SHEET_LAYOUT = [
-  // Define your desired sheet order here, e.g.:
-  // { name: 'Games' },
-  // { name: 'Tournaments', color: '#4a86e8' },
+  { name: 'Games', color: '#4a86e8' },
+  { name: 'GamesIntegration', color: '#4a86e8' },
+  { name: 'Tournaments', color: '#e8734a' },
+  { name: 'TournamentRewards', color: '#e8734a' },
+  { name: 'CyclicQuests', color: '#6aa84f' },
+  { name: 'Guides' },
+  { name: 'GuideSteps' },
+  { name: 'FortuneWheelConfig', color: '#a64d79' },
+  { name: 'FortuneWheelSlots', color: '#a64d79' },
+  { name: 'Avatars' },
+  { name: 'CheckIn' },
+  { name: 'AdminPermissions', color: '#666666' },
+  { name: 'AdminConfigWritePermissions', color: '#666666' },
+  { name: 'Localization' },
 ];
 
 /**
@@ -67,7 +84,17 @@ const EXPECTED_SHEET_SCHEMA = {
     required: ['GameId', 'Provider'],
   },
   Tournaments: {
-    columns: ['Id', 'Name', 'GameId', 'StartUtc', 'EndUtc', 'EntryFee', 'Priority', 'IsLongTerm', 'IsEnabled'],
+    columns: [
+      'Id',
+      'Name',
+      'GameId',
+      'StartUtc',
+      'EndUtc',
+      'EntryFee',
+      'Priority',
+      'IsLongTerm',
+      'IsEnabled',
+    ],
     required: ['Id', 'Name', 'GameId'],
   },
   TournamentRewards: {
@@ -75,7 +102,16 @@ const EXPECTED_SHEET_SCHEMA = {
     required: ['TournamentId', 'Position'],
   },
   CyclicQuests: {
-    columns: ['Id', 'Name', 'Cycle', 'Objective', 'FrontendAction', 'RewardCurrency', 'RewardAmount', 'IsEnabled'],
+    columns: [
+      'Id',
+      'Name',
+      'Cycle',
+      'Objective',
+      'FrontendAction',
+      'RewardCurrency',
+      'RewardAmount',
+      'IsEnabled',
+    ],
     required: ['Id', 'Name', 'Cycle'],
   },
   Guides: {
@@ -91,7 +127,15 @@ const EXPECTED_SHEET_SCHEMA = {
     required: ['Key', 'Value'],
   },
   FortuneWheelSlots: {
-    columns: ['SlotIndex', 'RarityTier', 'RewardCurrency', 'RewardAmount', 'Multiplier', 'SpinType', 'Weight'],
+    columns: [
+      'SlotIndex',
+      'RarityTier',
+      'RewardCurrency',
+      'RewardAmount',
+      'Multiplier',
+      'SpinType',
+      'Weight',
+    ],
     required: ['SlotIndex', 'RarityTier'],
   },
   Avatars: {
@@ -131,7 +175,16 @@ function collectValidationErrors_() {
     var headers = sheet.getRange(1, 1, 1, Math.max(lastCol, schema.columns.length)).getValues()[0];
     for (var i = 0; i < schema.columns.length; i++) {
       if (String(headers[i] || '').trim() !== schema.columns[i]) {
-        errors.push(name + ' col ' + (i + 1) + ': expected "' + schema.columns[i] + '", found "' + headers[i] + '"');
+        errors.push(
+          name +
+            ' col ' +
+            (i + 1) +
+            ': expected "' +
+            schema.columns[i] +
+            '", found "' +
+            headers[i] +
+            '"'
+        );
       }
     }
     // Required field check
@@ -209,13 +262,17 @@ function reorderSheets() {
 }
 
 function removeAllConfigSheets() {
-  if (!showConfirm_('Remove All Sheets', 'Delete every config sheet AND clear migration history?')) {
+  if (
+    !showConfirm_('Remove All Sheets', 'Delete every config sheet AND clear migration history?')
+  ) {
     return;
   }
   var ss = getSpreadsheet();
   var blank = ss.getSheetByName('Sheet1') || ss.insertSheet('Sheet1');
   ss.setActiveSheet(blank);
-  ALL_SHEET_NAMES.forEach(function (n) { deleteSheetIfExists_(n); });
+  ALL_SHEET_NAMES.forEach(function (n) {
+    deleteSheetIfExists_(n);
+  });
   deleteSheetIfExists_(MIGRATIONS_SHEET_NAME);
   deleteSheetIfExists_(PROGRESS_SHEET_NAME);
   deleteSheetIfExists_(HEALTH_SHEET_NAME);
@@ -223,13 +280,20 @@ function removeAllConfigSheets() {
 }
 
 function resetAllToDefaults() {
-  if (!showConfirm_('Reset to Defaults', 'This will DELETE all config data and re-apply every migration from scratch. Continue?')) {
+  if (
+    !showConfirm_(
+      'Reset to Defaults',
+      'This will DELETE all config data and re-apply every migration from scratch. Continue?'
+    )
+  ) {
     return;
   }
   var ss = getSpreadsheet();
   var blank = ss.getSheetByName('Sheet1') || ss.insertSheet('Sheet1');
   ss.setActiveSheet(blank);
-  ALL_SHEET_NAMES.forEach(function (n) { deleteSheetIfExists_(n); });
+  ALL_SHEET_NAMES.forEach(function (n) {
+    deleteSheetIfExists_(n);
+  });
   deleteSheetIfExists_(MIGRATIONS_SHEET_NAME);
   runMigrations();
 }

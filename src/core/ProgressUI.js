@@ -20,11 +20,7 @@ function _ensureProgressSheet_() {
   sheet
     .getRange(1, 1, 1, 6)
     .setValues([['Job', 'Step', 'Total', 'Percent', 'Message', 'UpdatedAtUtc']]);
-  sheet
-    .getRange(1, 1, 1, 6)
-    .setFontWeight('bold')
-    .setBackground('#37474F')
-    .setFontColor('#FFFFFF');
+  sheet.getRange(1, 1, 1, 6).setFontWeight('bold').setBackground('#37474F').setFontColor('#FFFFFF');
   sheet.setFrozenRows(1);
   sheet.hideSheet();
   trimSheet_(sheet, 2, 6);

@@ -5,7 +5,7 @@
  *   createXxxSheet_()    — idempotent: creates the sheet if absent, sets header.
  *   configureXxxSheet_() — header notes, column widths, dropdowns, checkboxes.
  *
- * Seed data lives in MIGRATIONS, never in create*/configure* helpers.
+ * Seed data lives in MIGRATIONS, never in the create or configure helpers.
  */
 
 // ─── shared helpers ───────────────────────────────────────────────
@@ -59,7 +59,15 @@ function configureGamesSheet_(sheet) {
     'Free-form notes.',
   ]);
   var dataRows = Math.max(0, sheet.getLastRow() - 1);
-  applyDropdownList_(sheet, 2, 3, Math.max(1, dataRows), ['Casual', 'Puzzle', 'Card', 'Slots', 'Arcade', 'Other'], false, 'Pick a genre.');
+  applyDropdownList_(
+    sheet,
+    2,
+    3,
+    Math.max(1, dataRows),
+    ['Casual', 'Puzzle', 'Card', 'Slots', 'Arcade', 'Other'],
+    false,
+    'Pick a genre.'
+  );
   applyCheckboxColumn_(sheet, 2, 4, Math.max(1, dataRows));
   setColumnWidths_(sheet, [180, 220, 140, 100, 320]);
   trimSheet_(sheet, Math.max(2, dataRows + 1), 5);
@@ -88,9 +96,25 @@ function configureGamesIntegrationSheet_(sheet) {
   ]);
   if (games) {
     var gamesLast = Math.max(2, games.getLastRow());
-    applyDropdownRange_(sheet, 2, 1, Math.max(1, dataRows), games.getRange(2, 1, gamesLast - 1, 1), false, 'Select a Games.Id.');
+    applyDropdownRange_(
+      sheet,
+      2,
+      1,
+      Math.max(1, dataRows),
+      games.getRange(2, 1, gamesLast - 1, 1),
+      false,
+      'Select a Games.Id.'
+    );
   }
-  applyDropdownList_(sheet, 2, 2, Math.max(1, dataRows), ['Internal', 'Pragmatic', 'Evolution', 'Custom'], false, 'Provider name.');
+  applyDropdownList_(
+    sheet,
+    2,
+    2,
+    Math.max(1, dataRows),
+    ['Internal', 'Pragmatic', 'Evolution', 'Custom'],
+    false,
+    'Provider name.'
+  );
   applyCheckboxColumn_(sheet, 2, 5, Math.max(1, dataRows));
   setColumnWidths_(sheet, [180, 140, 240, 320, 100]);
   trimSheet_(sheet, Math.max(2, dataRows + 1), 5);
@@ -100,7 +124,17 @@ function configureGamesIntegrationSheet_(sheet) {
 
 function createTournamentsSheet_() {
   var sheet = getOrCreateSheet('Tournaments');
-  _writeHeader_(sheet, ['Id', 'Name', 'GameId', 'StartUtc', 'EndUtc', 'EntryFee', 'Priority', 'IsLongTerm', 'IsEnabled']);
+  _writeHeader_(sheet, [
+    'Id',
+    'Name',
+    'GameId',
+    'StartUtc',
+    'EndUtc',
+    'EntryFee',
+    'Priority',
+    'IsLongTerm',
+    'IsEnabled',
+  ]);
   configureTournamentsSheet_(sheet);
   return sheet;
 }
@@ -123,7 +157,15 @@ function configureTournamentsSheet_(sheet) {
   ]);
   if (games) {
     var gamesLast = Math.max(2, games.getLastRow());
-    applyDropdownRange_(sheet, 2, 3, Math.max(1, dataRows), games.getRange(2, 1, gamesLast - 1, 1), false, 'Select a Games.Id.');
+    applyDropdownRange_(
+      sheet,
+      2,
+      3,
+      Math.max(1, dataRows),
+      games.getRange(2, 1, gamesLast - 1, 1),
+      false,
+      'Select a Games.Id.'
+    );
   }
   applyCheckboxColumn_(sheet, 2, 8, Math.max(1, dataRows));
   applyCheckboxColumn_(sheet, 2, 9, Math.max(1, dataRows));
@@ -135,7 +177,13 @@ function configureTournamentsSheet_(sheet) {
 
 function createTournamentRewardsSheet_() {
   var sheet = getOrCreateSheet('TournamentRewards');
-  _writeHeader_(sheet, ['TournamentId', 'Position', 'RewardCurrency', 'RewardAmount', 'RewardItemId']);
+  _writeHeader_(sheet, [
+    'TournamentId',
+    'Position',
+    'RewardCurrency',
+    'RewardAmount',
+    'RewardItemId',
+  ]);
   configureTournamentRewardsSheet_(sheet);
   return sheet;
 }
@@ -154,9 +202,25 @@ function configureTournamentRewardsSheet_(sheet) {
   ]);
   if (tournaments) {
     var tLast = Math.max(2, tournaments.getLastRow());
-    applyDropdownRange_(sheet, 2, 1, Math.max(1, dataRows), tournaments.getRange(2, 1, tLast - 1, 1), false, 'Select a Tournaments.Id.');
+    applyDropdownRange_(
+      sheet,
+      2,
+      1,
+      Math.max(1, dataRows),
+      tournaments.getRange(2, 1, tLast - 1, 1),
+      false,
+      'Select a Tournaments.Id.'
+    );
   }
-  applyDropdownList_(sheet, 2, 3, Math.max(1, dataRows), ['coins', 'gems', 'tickets', 'xp'], true, 'See _Reference for full list.');
+  applyDropdownList_(
+    sheet,
+    2,
+    3,
+    Math.max(1, dataRows),
+    ['coins', 'gems', 'tickets', 'xp'],
+    true,
+    'See _Reference for full list.'
+  );
   setColumnWidths_(sheet, [220, 100, 160, 140, 220]);
   trimSheet_(sheet, Math.max(2, dataRows + 1), 5);
 }
@@ -165,7 +229,16 @@ function configureTournamentRewardsSheet_(sheet) {
 
 function createCyclicQuestsSheet_() {
   var sheet = getOrCreateSheet('CyclicQuests');
-  _writeHeader_(sheet, ['Id', 'Name', 'Cycle', 'Objective', 'FrontendAction', 'RewardCurrency', 'RewardAmount', 'IsEnabled']);
+  _writeHeader_(sheet, [
+    'Id',
+    'Name',
+    'Cycle',
+    'Objective',
+    'FrontendAction',
+    'RewardCurrency',
+    'RewardAmount',
+    'IsEnabled',
+  ]);
   configureCyclicQuestsSheet_(sheet);
   return sheet;
 }
@@ -184,8 +257,24 @@ function configureCyclicQuestsSheet_(sheet) {
     'Reward amount.',
     'Checkbox. Uncheck to disable.',
   ]);
-  applyDropdownList_(sheet, 2, 3, Math.max(1, dataRows), ['Daily', 'Weekly', 'Monthly'], false, 'Cycle period.');
-  applyDropdownList_(sheet, 2, 6, Math.max(1, dataRows), ['coins', 'gems', 'tickets', 'xp'], true, '');
+  applyDropdownList_(
+    sheet,
+    2,
+    3,
+    Math.max(1, dataRows),
+    ['Daily', 'Weekly', 'Monthly'],
+    false,
+    'Cycle period.'
+  );
+  applyDropdownList_(
+    sheet,
+    2,
+    6,
+    Math.max(1, dataRows),
+    ['coins', 'gems', 'tickets', 'xp'],
+    true,
+    ''
+  );
   applyCheckboxColumn_(sheet, 2, 8, Math.max(1, dataRows));
   setColumnWidths_(sheet, [200, 220, 100, 280, 220, 140, 130, 100]);
   trimSheet_(sheet, Math.max(2, dataRows + 1), 8);
@@ -238,7 +327,15 @@ function configureGuideStepsSheet_(sheet) {
   ]);
   if (guides) {
     var gLast = Math.max(2, guides.getLastRow());
-    applyDropdownRange_(sheet, 2, 1, Math.max(1, dataRows), guides.getRange(2, 1, gLast - 1, 1), false, 'Select a Guides.Id.');
+    applyDropdownRange_(
+      sheet,
+      2,
+      1,
+      Math.max(1, dataRows),
+      guides.getRange(2, 1, gLast - 1, 1),
+      false,
+      'Select a Guides.Id.'
+    );
   }
   setColumnWidths_(sheet, [200, 100, 240, 240, 320]);
   trimSheet_(sheet, Math.max(2, dataRows + 1), 5);
@@ -269,7 +366,15 @@ function configureFortuneWheelConfigSheet_(sheet) {
 
 function createFortuneWheelSlotsSheet_() {
   var sheet = getOrCreateSheet('FortuneWheelSlots');
-  _writeHeader_(sheet, ['SlotIndex', 'RarityTier', 'RewardCurrency', 'RewardAmount', 'Multiplier', 'SpinType', 'Weight']);
+  _writeHeader_(sheet, [
+    'SlotIndex',
+    'RarityTier',
+    'RewardCurrency',
+    'RewardAmount',
+    'Multiplier',
+    'SpinType',
+    'Weight',
+  ]);
   configureFortuneWheelSlotsSheet_(sheet);
   return sheet;
 }
@@ -287,10 +392,42 @@ function configureFortuneWheelSlotsSheet_(sheet) {
     'Spin type this slot belongs to (Free, Paid, Premium).',
     'Weighting for random draw. Range 1-10000.',
   ]);
-  applyDropdownList_(sheet, 2, 2, Math.max(1, dataRows), ['Common', 'Rare', 'Epic', 'Legendary', 'Mythic'], false, 'Rarity tier.');
-  applyDropdownList_(sheet, 2, 3, Math.max(1, dataRows), ['coins', 'gems', 'tickets', 'xp'], true, '');
-  applyDropdownList_(sheet, 2, 5, Math.max(1, dataRows), ['x1', 'x2', 'x3', 'x5', 'x10'], false, '');
-  applyDropdownList_(sheet, 2, 6, Math.max(1, dataRows), ['Free', 'Paid', 'Premium'], false, 'Spin type.');
+  applyDropdownList_(
+    sheet,
+    2,
+    2,
+    Math.max(1, dataRows),
+    ['Common', 'Rare', 'Epic', 'Legendary', 'Mythic'],
+    false,
+    'Rarity tier.'
+  );
+  applyDropdownList_(
+    sheet,
+    2,
+    3,
+    Math.max(1, dataRows),
+    ['coins', 'gems', 'tickets', 'xp'],
+    true,
+    ''
+  );
+  applyDropdownList_(
+    sheet,
+    2,
+    5,
+    Math.max(1, dataRows),
+    ['x1', 'x2', 'x3', 'x5', 'x10'],
+    false,
+    ''
+  );
+  applyDropdownList_(
+    sheet,
+    2,
+    6,
+    Math.max(1, dataRows),
+    ['Free', 'Paid', 'Premium'],
+    false,
+    'Spin type.'
+  );
   setColumnWidths_(sheet, [110, 120, 140, 130, 110, 110, 90]);
   trimSheet_(sheet, Math.max(2, dataRows + 1), 7);
 }
@@ -342,7 +479,15 @@ function configureCheckInSheet_(sheet) {
     'Optional bonus item id.',
     'Free-form note.',
   ]);
-  applyDropdownList_(sheet, 2, 2, Math.max(1, dataRows), ['coins', 'gems', 'tickets', 'xp'], true, '');
+  applyDropdownList_(
+    sheet,
+    2,
+    2,
+    Math.max(1, dataRows),
+    ['coins', 'gems', 'tickets', 'xp'],
+    true,
+    ''
+  );
   setColumnWidths_(sheet, [80, 160, 140, 220, 300]);
   trimSheet_(sheet, Math.max(2, dataRows + 1), 5);
 }
@@ -368,8 +513,24 @@ function configureAdminPermissionsSheet_(sheet) {
     'Free-form notes.',
     'Checkbox. Uncheck to disable without deleting.',
   ]);
-  applyDropdownList_(sheet, 2, 3, Math.max(1, dataRows), ['1', '2', '3'], false, 'L1=read, L2=operator, L3=super-admin.');
-  applyDropdownList_(sheet, 2, 4, Math.max(1, dataRows), ['1', '2', '3'], false, '1 = any admin, 3 = super-admin only.');
+  applyDropdownList_(
+    sheet,
+    2,
+    3,
+    Math.max(1, dataRows),
+    ['1', '2', '3'],
+    false,
+    'L1=read, L2=operator, L3=super-admin.'
+  );
+  applyDropdownList_(
+    sheet,
+    2,
+    4,
+    Math.max(1, dataRows),
+    ['1', '2', '3'],
+    false,
+    '1 = any admin, 3 = super-admin only.'
+  );
   applyCheckboxColumn_(sheet, 2, 6, Math.max(1, dataRows));
   setColumnWidths_(sheet, [180, 200, 80, 140, 320, 90]);
   trimSheet_(sheet, Math.max(2, dataRows + 1), 6);
@@ -393,7 +554,15 @@ function configureAdminConfigWritePermissionsSheet_(sheet) {
     'Minimum admin level (1-3) required to apply changes.',
     'Free-form description.',
   ]);
-  applyDropdownList_(sheet, 2, 2, Math.max(1, dataRows), ['1', '2', '3'], false, '1 = any admin, 3 = super-admin only.');
+  applyDropdownList_(
+    sheet,
+    2,
+    2,
+    Math.max(1, dataRows),
+    ['1', '2', '3'],
+    false,
+    '1 = any admin, 3 = super-admin only.'
+  );
   setColumnWidths_(sheet, [260, 140, 360]);
   trimSheet_(sheet, Math.max(2, dataRows + 1), 3);
 }

@@ -13,8 +13,10 @@ function onInstall() {
 
 function buildMainMenu_() {
   var ui = SpreadsheetApp.getUi();
+  // The label is a project concern — it is the one string every adopter renames.
+  var title = typeof MENU_TITLE === 'string' && MENU_TITLE ? MENU_TITLE : 'Sheet Config';
   var menu = ui
-    .createMenu('⚙️ Sheet Config')
+    .createMenu(title)
     .addItem('Run Migrations', 'runMigrations')
     .addItem('Migration Status', 'showMigrationStatus')
     .addSeparator()

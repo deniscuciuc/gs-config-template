@@ -7,7 +7,9 @@
  */
 
 function exampleGenerateTournaments() {
-  var games = readRows('Games').filter(function (g) { return g.IsEnabled; });
+  var games = readRows('Games').filter(function (g) {
+    return g.IsEnabled;
+  });
   if (games.length === 0) {
     showAlert('Generate tournaments', 'No enabled games found in the Games sheet.');
     return;
@@ -17,7 +19,10 @@ function exampleGenerateTournaments() {
   var now = new Date();
   var startMonth = now.getUTCMonth() + 1; // 0-based → 1-based
   var startYear = now.getUTCFullYear();
-  if (startMonth > 11) { startMonth = 0; startYear += 1; }
+  if (startMonth > 11) {
+    startMonth = 0;
+    startYear += 1;
+  }
 
   var rows = [];
   for (var i = 0; i < games.length; i++) {
@@ -41,8 +46,14 @@ function exampleGenerateTournaments() {
   p.finish('Done');
   showAlert(
     'Generate tournaments',
-    '✅ Upserted ' + (result.appended + result.updated) + ' tournament(s)' +
-      ' (' + result.appended + ' new, ' + result.updated + ' updated).'
+    '✅ Upserted ' +
+      (result.appended + result.updated) +
+      ' tournament(s)' +
+      ' (' +
+      result.appended +
+      ' new, ' +
+      result.updated +
+      ' updated).'
   );
 }
 

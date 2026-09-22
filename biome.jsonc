@@ -1,0 +1,85 @@
+{
+  "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+  "organizeImports": { "enabled": true },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": true,
+      "suspicious": {
+        "noExplicitAny": "warn",
+        // Apps Script runs every file in one shared global scope, so a name declared in
+        // one file and referenced from another is the module system, not a mistake.
+        "noRedeclare": "off",
+        "noAssignInExpressions": "off"
+      },
+      "style": {
+        "useConst": "error",
+        "useSingleVarDeclarator": "warn",
+        // The runtime sources are written in an ES5 dialect on purpose: `var` hoists to
+        // the top of the enclosing function, which is the scoping model the single global
+        // namespace and the concatenated bundle both assume.
+        "noVar": "off",
+        // Every `configureXxxSheet_(sheet)` opens with `sheet = sheet || getSheet('X')`.
+        // That is the optional-argument idiom used consistently across the sheet builders;
+        // rewriting it into a second local would be noise in eighteen places.
+        "noParameterAssign": "off"
+      },
+      "correctness": {
+        // Cross-file references are resolved by the bundle, not by this file's imports.
+        "noUnusedVariables": "off",
+        "noUndeclaredVariables": "off",
+        // Same reason as noVar: `var` inside a block is the deliberate ES5 style here.
+        "noInnerDeclarations": "off"
+      },
+      "complexity": {
+        "noForEach": "off",
+        // `function () {}` callbacks are the house style in the runtime sources, and they
+        // keep `this` semantics predictable for anyone reading the bundle in the Apps
+        // Script editor alongside older examples.
+        "useArrowFunction": "off"
+      }
+    }
+  },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineWidth": 100
+  },
+  "javascript": {
+    "parser": { "unsafeParameterDecoratorsEnabled": false },
+    "formatter": {
+      "quoteStyle": "single",
+      "trailingCommas": "es5",
+      "semicolons": "always"
+    },
+    // Apps Script built-ins. Declared here so noUndeclaredVariables stays useful for the
+    // Node-side tooling even though it is off for the runtime sources.
+    "globals": [
+      "SpreadsheetApp",
+      "Session",
+      "Logger",
+      "LanguageApp",
+      "Utilities",
+      "PropertiesService",
+      "HtmlService",
+      "DriveApp",
+      "UrlFetchApp"
+    ]
+  },
+  "files": {
+    // Sources are .js so that Biome, CodeQL and Jest can all actually read them; the
+    // bundle they build is what carries the .gs extension. See docs/architecture.md.
+    "include": ["src/**/*.js", "examples/**/*.js", "test/**/*.js", "scripts/**/*.js"],
+    "ignore": ["dist/", "node_modules/", "coverage/"]
+  },
+  "overrides": [
+    {
+      // String concatenation is the established voice of the runtime sources; template
+      // literals are fine in the Node tooling under scripts/ and test/, where this
+      // override does not apply.
+      "include": ["src/**/*.js", "examples/**/*.js"],
+      "linter": { "rules": { "style": { "useTemplate": "off" } } }
+    }
+  ]
+}

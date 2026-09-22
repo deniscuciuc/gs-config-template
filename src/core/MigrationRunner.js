@@ -94,9 +94,14 @@ function runMigrations() {
       progress.finish('Failed at ' + m.id);
       showAlert(
         'Migration failed',
-        'Migration: ' + m.id + '\n\n' +
-          'Applied before failure:\n' + partial + '\n\n' +
-          'Error: ' + (err && err.message ? err.message : err)
+        'Migration: ' +
+          m.id +
+          '\n\n' +
+          'Applied before failure:\n' +
+          partial +
+          '\n\n' +
+          'Error: ' +
+          (err?.message ? err.message : err)
       );
       return;
     }

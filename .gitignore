@@ -17,3 +17,4 @@ coverage/
 
 # clasp
 .clasp.json
+release-notes.md

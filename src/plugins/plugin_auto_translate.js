@@ -62,7 +62,9 @@ function autoTranslateMissingLocales() {
     }
 
     var translations = translateBatch(
-      pending.map(function (x) { return x.text; }),
+      pending.map(function (x) {
+        return x.text;
+      }),
       'en',
       target.code
     );

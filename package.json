@@ -1,7 +1,17 @@
 {
   "name": "gs-config-template",
-  "version": "1.0.0",
-  "description": "Reusable Google Sheets config template: EF Core-style migrations, typed sheet schemas, plugin system, health dashboard.",
+  "version": "0.1.0",
+  "description": "Google Apps Script template for Google Sheets config: EF Core-style migrations, typed sheet schemas, plugin system, health dashboard.",
+  "license": "MIT",
+  "author": "Denis Cuciuc",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/deniscuciuc/gs-config-template.git"
+  },
+  "bugs": {
+    "url": "https://github.com/deniscuciuc/gs-config-template/issues"
+  },
+  "homepage": "https://github.com/deniscuciuc/gs-config-template#readme",
   "private": true,
   "packageManager": "pnpm@10.0.0",
   "engines": {
@@ -9,13 +19,17 @@
     "pnpm": ">=10"
   },
   "scripts": {
-    "lint": "biome check src/ test/ scripts/",
-    "lint:fix": "biome check --write src/ test/ scripts/",
-    "format": "biome format --write src/ test/ scripts/",
+    "lint": "biome check src/ examples/ test/ scripts/",
+    "lint:fix": "biome check --write src/ examples/ test/ scripts/",
+    "lint:ci": "biome ci src/ examples/ test/ scripts/",
+    "format": "biome format --write src/ examples/ test/ scripts/",
     "test": "jest",
     "test:ci": "jest --ci",
+    "test:coverage": "jest --coverage",
     "build": "node scripts/build.js",
-    "ci": "pnpm lint && pnpm test && pnpm build"
+    "build:example": "node scripts/build.js --overlay examples/game-config --out dist/bundle.game-config.gs",
+    "export:gs": "node scripts/export-gs.js",
+    "ci": "pnpm lint:ci && pnpm test:ci && pnpm build && pnpm build:example"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
@@ -24,6 +38,8 @@
   "jest": {
     "testEnvironment": "node",
     "testMatch": ["**/test/**/*.test.js"],
-    "setupFiles": ["./test/__mocks__/SpreadsheetApp.js"]
+    "setupFiles": ["./test/__mocks__/SpreadsheetApp.js"],
+    "collectCoverageFrom": ["scripts/**/*.js"],
+    "coverageReporters": ["text", "lcov"]
   }
 }

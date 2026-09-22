@@ -1,6 +1,6 @@
 const { loadGsFiles } = require('./__mocks__/loader');
 
-const FILES = ['core/Core.gs', 'core/Utilities.gs'];
+const FILES = ['core/Core.js', 'core/Utilities.js'];
 
 describe('Utilities', () => {
   beforeAll(() => {
