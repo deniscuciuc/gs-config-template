@@ -97,7 +97,7 @@ would put them in different realms and neither would work.
 
 The cost is that coverage cannot see through it. `pnpm test:coverage` reports on `scripts/`
 only, and the number for `src/` would be zero no matter how many tests you write — so it is
-not collected rather than reported as a falsehood. The 26 tests do exercise `src/`; nothing
+not collected rather than reported as a falsehood. The suites do exercise `src/`; nothing
 can measure it. Making that measurable means replacing the loader, which is a real piece of
 work and a welcome one.
 

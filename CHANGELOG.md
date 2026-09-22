@@ -39,6 +39,8 @@ dashboard, and a build that concatenates it all into one file you paste into App
 - `scripts/convert-ext.js`, which renames sources between `.gs` and `.js` — for bringing an
   existing Apps Script project into this tooling, or for leaving it.
 - Overlay support in the bundler, so one core can build several projects.
+- Test suites for the plugin API facade, the sheet-layout rules and the bundler, none
+  of which had any coverage: 12 tests became 51.
 - `PROJECT_NAME` and `MENU_TITLE` in the project layer: the two strings an adopter renames.
 
 ### Changed

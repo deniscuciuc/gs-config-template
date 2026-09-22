@@ -185,6 +185,10 @@ class FakeSheet {
     this.columnWidths[c] = w;
   }
   setRowHeight() {}
+  setTabColor(color) {
+    this.tabColor = color;
+    return this;
+  }
   hideSheet() {
     this.hidden = true;
   }
@@ -197,22 +201,39 @@ class FakeSheet {
 class FakeSpreadsheet {
   constructor() {
     this.sheets = {};
+    // Tab position is a real part of the API — applySheetLayout_ exists to change it — so
+    // order is tracked explicitly rather than left to object key ordering.
+    this.order = [];
     this.activeSheet = null;
   }
   getSheetByName(name) {
     return this.sheets[name] || null;
   }
+  getSheets() {
+    return this.order.map((n) => this.sheets[n]).filter(Boolean);
+  }
   insertSheet(name) {
     if (this.sheets[name]) return this.sheets[name];
     const s = new FakeSheet(name);
     this.sheets[name] = s;
+    this.order.push(name);
     return s;
   }
   deleteSheet(sheet) {
-    if (sheet?.name) delete this.sheets[sheet.name];
+    if (sheet?.name) {
+      delete this.sheets[sheet.name];
+      this.order = this.order.filter((n) => n !== sheet.name);
+    }
   }
   setActiveSheet(s) {
     this.activeSheet = s;
+  }
+  /** 1-based, matching the Apps Script API. */
+  moveActiveSheet(pos) {
+    const name = this.activeSheet?.name;
+    if (!name) return;
+    this.order = this.order.filter((n) => n !== name);
+    this.order.splice(Math.max(0, pos - 1), 0, name);
   }
 }
 
