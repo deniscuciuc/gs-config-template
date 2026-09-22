@@ -21,32 +21,32 @@ extension point).
 
 ## When you are invoked
 
-The user wants to add or modify a `.gs` plugin in `src/plugins/`. They will
+The user wants to add or modify a `.js` plugin in `src/plugins/`. They will
 describe what the plugin should do (e.g. "generate one tournament per game",
 "export Localization to JSON", "rebuild the FortuneWheel slot table"). Your
 job is to produce a single self-contained file that follows the public API
-contract documented in `docs/PLUGIN_AUTHORING.md`.
+contract documented in `docs/plugins.md`.
 
 ## Required reading before writing code
 
 Read these files to ground yourself in the project's actual sheet names,
 columns, and conventions:
 
-1. `docs/PLUGIN_AUTHORING.md` — public API table, hard rules, hello-world
+1. `docs/plugins.md` — public API table, hard rules, hello-world
    skeleton.
-2. `src/core/PluginApi.gs` — exact signatures of the facade functions.
-3. `src/core/PluginMenu.gs` — `PLUGIN_MENU_ITEMS` shape and section grouping.
-4. `src/project/Config.gs` — `ALL_SHEET_NAMES` (canonical list of sheet
+2. `src/core/PluginApi.js` — exact signatures of the facade functions.
+3. `src/core/PluginMenu.js` — `PLUGIN_MENU_ITEMS` shape and section grouping.
+4. `src/project/Config.js` — `ALL_SHEET_NAMES` (canonical list of sheet
    names you may reference).
-5. `src/project/SheetDefinitions.gs` — column order for each sheet (so your
+5. `src/project/SheetDefinitions.js` — column order for each sheet (so your
    plugin uses the right keys when calling `readRows`/`upsertRowsByKey`).
-6. At least one existing example: `src/plugins/plugin_auto_translate.gs`
-   or `src/plugins/example_generate_tournaments.gs`.
+6. At least one existing example: `src/plugins/plugin_auto_translate.js`
+   or `src/plugins/example_generate_tournaments.js`.
 
 ## Where the plugin goes
 
-- File path: `src/plugins/plugin_<short_snake_case_name>.gs`
-  (or `example_<name>.gs` if it is illustrative rather than for daily use).
+- File path: `src/plugins/plugin_<short_snake_case_name>.js`
+  (or `example_<name>.js` if it is illustrative rather than for daily use).
 - Never put plugin code under `src/core/`, `src/project/`, or
   `src/migrations/`.
 
@@ -91,7 +91,7 @@ You may also use Apps Script globals declared in `biome.json`:
 
 ```javascript
 /**
- * plugin_<name>.gs — <one-line summary>.
+ * plugin_<name>.js — <one-line summary>.
  *
  * What it does:
  *   - <bullet>
@@ -117,7 +117,7 @@ PLUGIN_MENU_ITEMS.push({
 
 ## After writing the file
 
-1. Run `pnpm lint` (or `pnpm ci`) and fix any Biome diagnostics.
+1. Run `pnpm lint` (or `pnpm verify`) and fix any Biome diagnostics.
 2. If you touched anything under `src/core/` or `src/project/` — **stop and
    ask**. Plugins are additive; if a plugin needs a new column or sheet,
    that change belongs in a migration, not in your plugin.
@@ -128,10 +128,10 @@ PLUGIN_MENU_ITEMS.push({
 
 - Do not generate migrations. Tell the user to add one under
   `src/migrations/` if persistent schema/data changes are needed.
-- Do not modify `package.json`, `.gitlab-ci.yml`, or any file outside
+- Do not modify `package.json`, `.github/workflows/`, or any file outside
   `src/plugins/`.
 - Do not invent sheet names — only use names from `ALL_SHEET_NAMES`.
-- Do not invent column names — read them from `SheetDefinitions.gs`.
+- Do not invent column names — read them from `SheetDefinitions.js`.
 - Do not catch and swallow errors silently. Let them bubble up so
   `runMigrations`-style alerts surface them, or wrap with `try/catch` only
   to call `showAlert(title, message)` with the failure detail.

@@ -1,217 +1,192 @@
 # gs-config-template
 
-> Reusable Google Sheets config template — EF Core-style migrations, typed
-> sheet schemas, plugin system, health dashboard. Drop the bundle into Apps
-> Script and ship.
+[![CI](https://github.com/deniscuciuc/gs-config-template/actions/workflows/ci.yml/badge.svg)](https://github.com/deniscuciuc/gs-config-template/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/deniscuciuc/gs-config-template/actions/workflows/codeql.yml/badge.svg)](https://github.com/deniscuciuc/gs-config-template/actions/workflows/codeql.yml)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Apps Script](https://img.shields.io/badge/Google%20Apps%20Script-V8-4285F4.svg)](https://developers.google.com/apps-script/guides/v8-runtime)
 
-## What is this?
+> A Google Apps Script template for projects that keep their configuration in a Google
+> Sheet. Migrations, typed sheet schemas, a plugin system and a health dashboard, bundled
+> into one file you paste into the Apps Script editor.
 
-A reusable Google Apps Script template for projects that use a Google Sheet as
-a lightweight app/game configuration store. It provides an EF Core-inspired
-migration runner with a hidden `__MigrationsHistory` sheet, typed schemas with
-**header notes (column documentation)**, dropdowns, and checkboxes for every
-column, a pluggable extension system for one-off scripts, and CI-ready tooling
-(Biome lint + Jest tests + single-file bundle build). After importing the
-bundle you get a production-ready `⚙️ Sheet Config` menu out of the box.
+A spreadsheet is a good configuration store right up to the moment two people disagree about
+what a column means, or someone adds a row that nothing validates, or a change has to reach
+four environments and nobody can say which of them already has it. This is the machinery
+that keeps it honest: the schema lives in code, every change is a migration that records
+itself, and each column carries a note explaining what belongs in it.
 
-## Features
-
-- **Migration runner** — pure runner; every change is an idempotent `up()`
-  recorded in `__MigrationsHistory`.
-- **Idempotent sheet creation** — `createXxxSheet_()` / `configureXxxSheet_()`
-  pairs you can safely call any time.
-- **Typed schemas with column docs** — every column has a header **note**
-  rendered in-sheet via `applyHeaderNotes_()`, plus column widths, dropdowns,
-  checkboxes, and cross-sheet range validation.
-- **Data-driven `_Reference` sheet** — sections defined as plain data,
-  rendered with one generic loop.
-- **Plugin system** — drop a `.gs` file in `src/plugins/`, push to
-  `PLUGIN_MENU_ITEMS`, and it appears in the menu.
-- **Auto-translate** — bundled plugin uses Google's `LanguageApp` to fill
-  missing translations (no API key required).
-- **Health dashboard** — one-click `__Health` sheet summarising migration
-  state, sheet presence, and validation errors.
-- **Progress reporter** — long-running tasks update a hidden `__Progress`
-  sheet.
-- **CI-ready** — Biome for lint/format, Jest for unit tests, single-file
-  `dist/bundle.gs` build artefact via the shared `typescript-mini` pipeline.
-
-## Project structure
+## Quick start
 
 ```
-gs-config-templates/
-├── README.md
-├── package.json                  # biome + jest + build scripts (no runtime deps)
-├── biome.json                    # lint + format config
-├── .gitlab-ci.yml                # extends shared typescript-mini pipeline
-├── .gitignore
-├── docs/
-│   └── PLUGIN_AUTHORING.md       # public API + plugin authoring guide
-├── .github/
-│   └── agents/
-│       └── gs-config-plugin-author.agent.md   # Copilot agent for plugin authoring
-├── src/
-│   ├── core/                     # template runtime, zero project-specific refs
-│   │   ├── Core.gs               # spreadsheet access helpers
-│   │   ├── Utilities.gs          # formatting, stripes, header, trimSheet_
-│   │   ├── Validation.gs         # dropdowns, checkboxes
-│   │   ├── ProgressUI.gs         # long-task progress reporter
-│   │   ├── MigrationRunner.gs    # runMigrations(), showMigrationStatus()
-│   │   ├── HealthDashboard.gs    # showHealthDashboard()
-│   │   ├── PluginApi.gs          # public facade for plugins
-│   │   ├── PluginMenu.gs         # PLUGIN_MENU_ITEMS extension point
-│   │   └── Menu.gs               # onOpen / onInstall
-│   ├── project/
-│   │   ├── Config.gs             # ALL_SHEET_NAMES, ALL_MIGRATIONS, validation
-│   │   ├── SheetDefinitions.gs   # createXxx/configureXxx for every sheet
-│   │   └── ReferenceSheet.gs     # data-driven _Reference renderer
-│   ├── migrations/               # one .gs per migration, chronological
-│   │   ├── _template.gs
-│   │   └── 2026…_*.gs
-│   └── plugins/
-│       ├── _plugin_template.gs
-│       ├── plugin_auto_translate.gs
-│       └── example_generate_tournaments.gs
-├── test/
-│   ├── migrationRunner.test.js
-│   ├── utilities.test.js
-│   └── __mocks__/
-│       ├── SpreadsheetApp.js     # minimal GAS mock
-│       └── loader.js             # concatenates + evaluates .gs files
-└── scripts/
-    └── build.js                  # produces dist/bundle.gs
-```
-
-## Getting started
-
-### Prerequisites
-
-- Node.js 20+
-- pnpm 10+ (`corepack enable && corepack prepare pnpm@10 --activate`)
-- Optional: [`clasp`](https://github.com/google/clasp) for `clasp push` to
-  Apps Script.
-
-### Local workflow
-
-```bash
 pnpm install
-pnpm lint        # biome check (lint + format)
-pnpm test        # jest
-pnpm build       # writes dist/bundle.gs
-pnpm ci          # lint + test + build
+pnpm build
 ```
 
-### Deploy to Apps Script
+Then:
 
-1. Run `pnpm build` — produces `dist/bundle.gs`.
-2. Open your spreadsheet → **Extensions → Apps Script**.
-3. Replace the contents of any single `.gs` file with `dist/bundle.gs`.
-4. Reload the spreadsheet — the `⚙️ Sheet Config` menu appears.
-5. Click **Run Migrations** to materialise all sheets.
+1. Open your spreadsheet, and choose **Extensions → Apps Script**.
+2. Replace the contents of the single `Code.gs` file with `dist/bundle.gs`.
+3. Reload the spreadsheet. A `⚙️ Sheet Config` menu appears — the label is `MENU_TITLE` in
+   [src/project/Config.js](src/project/Config.js), and renaming it is usually the first
+   thing you do.
+4. Click **Run Migrations** to create the sheets.
 
-Or with clasp:
+If you would rather work file-by-file than paste a bundle, `pnpm export:gs` writes one `.gs`
+file per source file for `clasp push`. See [docs/deploying.md](docs/deploying.md).
 
-```bash
-clasp push --force   # after running pnpm build
+## What you get
+
+| | |
+|---|---|
+| **Migrations** | Every change is an idempotent `up()` recorded in a hidden `__MigrationsHistory` sheet. `runMigrations()` is a pure runner: it skips what has already been applied, stops at the first failure, and contains no logic of its own. |
+| **Typed schemas** | `createXxxSheet_()` / `configureXxxSheet_()` pairs you can re-run at any time to repair drift in headers, widths, dropdowns and validation. |
+| **Column documentation** | Every column carries a header note, shown as a hover tooltip in the sheet. The people editing your config never have to read the code — and nothing else will ever tell them what `Priority` means. |
+| **Reference sheet** | A `_Reference` tab rendered from plain data: formats, enumerations, anything not obvious from a header. |
+| **Plugins** | Drop a file in `src/plugins/`, push one entry to `PLUGIN_MENU_ITEMS`, and it appears in the menu. Plugins call a small documented facade, not the internals. |
+| **Health dashboard** | One click regenerates a `__Health` sheet: migrations registered, applied and pending, sheets present, validation errors. |
+| **Progress reporter** | Apps Script's UI is modal-only, so long tasks report into a hidden `__Progress` sheet instead of freezing behind a dialog. |
+| **One-file bundle** | No runtime dependencies, nothing transpiled. The build concatenates sources in a fixed order and checks the result parses before writing it. |
+
+A migration is a file:
+
+```javascript
+const migration_202601010001_initial_setup = {
+  id: '202601010001_initial_setup',
+  description: 'Create the Settings, Localization and _Reference sheets.',
+  up: function () {
+    createSettingsSheet_();
+    createLocalizationSheet_();
+    createReferenceSheet_();
+  },
+};
 ```
 
-For multi-environment auto-deploy (dev/staging/prod) see
-[ci-templates/pipelines/gas-clasp-deploy.yml](../ci-templates/pipelines/gas-clasp-deploy.yml).
-
-## How migrations work
-
-1. Copy `src/migrations/_template.gs` → `YYYYMMDDNNNN_short_description.gs`.
-2. Implement `up()`. **Must be idempotent**: safe to re-run on any state.
-   Call only `create*`, `configure*`, `seed*`, `upsert*`, `ensure*` helpers.
-3. Register the exported const in `ALL_MIGRATIONS` in
-   [src/project/Config.gs](src/project/Config.gs).
-4. Run via menu: **⚙️ Sheet Config → Run Migrations**.
-5. Applied migrations are recorded in the hidden `__MigrationsHistory`
-   sheet (`MigrationId | Description | AppliedAtUtc | AppliedBy`).
-6. On error, `runMigrations()` shows an alert with the partial log and
-   stops — fix the migration and re-run.
-
-`runMigrations()` is a pure runner: it iterates `ALL_MIGRATIONS`, skips
-ids in history, runs the rest. There is **no** pre-flight logic anywhere.
-
-## Adding a new sheet
-
-1. Add the name to `ALL_SHEET_NAMES` in
-   [src/project/Config.gs](src/project/Config.gs).
-2. Add `createXxxSheet_()` + `configureXxxSheet_()` to
-   [src/project/SheetDefinitions.gs](src/project/SheetDefinitions.gs).
-   **Always include header notes** via `applyHeaderNotes_(sheet, [...])` —
-   one note per column documenting required/unique/format/foreign-key info.
-3. Add the schema entry to `EXPECTED_SHEET_SCHEMA` so `validateAllSheets()`
-   covers it.
-4. Add the create call to the `repairAllSheets()` action list.
-5. Create a migration whose `up()` calls `createXxxSheet_()` (and seeds if
-   needed). Register it in `ALL_MIGRATIONS`.
-
-## Column documentation (header notes)
-
-Every column must carry a one-line note explaining its purpose and constraints.
-Notes appear as a hover tooltip on the header cell in the spreadsheet, so
-end-users editing config never have to dig through code.
+And a column is documented where it is defined:
 
 ```javascript
 applyHeaderNotes_(sheet, [
-  'Slug game id (lowercase, hyphenated). Required, unique. Referenced by Tournaments.',
-  'Display name shown to players.',
-  'Game genre (Casual, Puzzle, Card, Slots, Other).',
-  'Checkbox. Uncheck to disable without deleting.',
-  'Free-form notes.',
+  'Setting key in dotted lowercase, e.g. feature.signup.enabled. Required, unique.',
+  'The value, written as text. Parse it according to Type.',
+  'How to parse Value: string, number, boolean or json. Required.',
+  'Checkbox. Uncheck to ignore the row without deleting it.',
+  'Free-form note explaining what this setting controls.',
 ]);
 ```
 
-The list length must match the header row exactly. See examples in
-[src/project/SheetDefinitions.gs](src/project/SheetDefinitions.gs).
+## Sources are .js, the bundle is .gs
 
-## Plugins
+The files under `src/` are `.js`. Apps Script calls its script files `.gs`, but no tool
+outside Google recognises that extension — Biome, CodeQL, Jest and most editors skip `.gs`
+files silently, which is how a syntax error lived in this repository undetected until the
+sources were renamed.
 
-Plugins are user-authored `.gs` files in `src/plugins/` that hook custom
-actions into the menu. See [docs/PLUGIN_AUTHORING.md](docs/PLUGIN_AUTHORING.md)
-for the public API and authoring rules.
+`pnpm build` emits `dist/bundle.gs`, and clasp maps local `.js` to remote `.gs` on push, so
+the Apps Script side is exactly the same. Two scripts are there if you want the other
+arrangement: `pnpm export:gs` writes the sources out as individual `.gs` files, and
+`scripts/convert-ext.js` renames them in place in either direction. What you give up by
+going back to `.gs` is lint and static analysis on your runtime code.
 
-Bundled examples:
+## How the bundle is built
 
-- **`plugin_auto_translate.gs`** — fills missing Localization translations via
-  Google's built-in `LanguageApp` (no API key, no per-row API calls).
-- **`example_generate_tournaments.gs`** — bulk-generates monthly tournaments
-  for every enabled game.
+Apps Script evaluates every script in one shared global scope, so order is part of the
+contract rather than an implementation detail:
 
-Menu wiring is automatic — push to `PLUGIN_MENU_ITEMS`:
-
-```javascript
-PLUGIN_MENU_ITEMS.push({
-  label: 'Auto-translate missing locales',
-  functionName: 'autoTranslateMissingLocales',
-  section: 'Localization',
-});
+```
+src/core/        explicit order (CORE_ORDER in scripts/build.js)
+src/migrations/  filename order
+src/project/     explicit order (PROJECT_ORDER)
+src/plugins/     filename order
 ```
 
-## CI setup (GitLab)
+A core file missing from `CORE_ORDER` fails the build. It used to be appended quietly,
+which is how `SheetLayout` came to load after `Menu` without anyone noticing.
 
-`.gitlab-ci.yml` extends the shared `typescript-mini` pipeline. The pipeline
-runs three jobs on every push:
+Note that migration *bundle* order is filename order, which is not necessarily the order
+`runMigrations()` executes them in — the runner follows `ALL_MIGRATIONS`. That is fine,
+because a migration file only declares a const, but do not read one as the other.
 
-| Stage    | Command       | Notes                                   |
-| -------- | ------------- | --------------------------------------- |
-| validate | `pnpm lint`   | Biome lint + format check               |
-| build    | `pnpm build`  | Produces `dist/bundle.gs` (30d artifact)|
-| test     | `pnpm test`   | Jest unit tests                         |
+## Adapting it to your domain
 
-## Design principles
+`src/project/` is a two-sheet skeleton — `Settings` and `Localization` — that exists to show
+the conventions, not to suggest a schema. Replacing it is the job, and
+[docs/adapting-the-template.md](docs/adapting-the-template.md) is the order to do it in.
 
-- **Migrations are the source of truth.** Manual sheet edits drift; if it
-  matters, it goes in a migration.
-- **Every `up()` is idempotent.** Re-running must be a no-op once applied.
-- **`runMigrations()` is a pure runner.** Zero business logic, zero
-  pre-flight checks, zero seed calls outside `up()`.
-- **Core is project-agnostic.** Files under `src/core/` contain no sheet
-  names, no domain catalogs, no seed data.
-- **Public API is small and stable.** Plugins call only what's exported in
-  `PluginApi.gs`. Anything ending in `_` is private.
-- **Batch reads/writes.** Never read/write single cells in loops — always
-  one `getValues()` / `setValues()`.
-- **Document every column.** Each schema entry must include a header note.
+Three files are yours: `Config.js`, `SheetDefinitions.js` and `ReferenceSections.js`.
+Everything in `src/core/` is generic and should not need editing.
+
+## Examples
+
+| Overlay | What it shows |
+|---|---|
+| [examples/game-config](examples/game-config) | A complete game-configuration domain: fourteen sheets, cross-sheet range validation, eight migrations including two that rewrite existing data, and a plugin that bulk-generates rows. Build it with `pnpm build:example`. |
+
+An overlay replaces the project and migration layers while reusing the same core, so one
+runtime can build several projects.
+
+## Repository structure
+
+```
+gs-config-template/
+├── src/
+│   ├── core/                     template runtime, no project-specific references
+│   │   ├── Core.js               spreadsheet access helpers
+│   │   ├── Utilities.js          formatting, header notes, stripes, trimSheet_
+│   │   ├── Validation.js         dropdowns, checkboxes
+│   │   ├── SheetLayout.js        tab order and colours
+│   │   ├── ProgressUI.js         long-task progress reporter
+│   │   ├── MigrationRunner.js    runMigrations(), showMigrationStatus()
+│   │   ├── HealthDashboard.js    showHealthDashboard()
+│   │   ├── ReferenceSheet.js     generic _Reference renderer
+│   │   ├── PluginApi.js          public facade for plugins
+│   │   ├── PluginMenu.js         PLUGIN_MENU_ITEMS extension point
+│   │   └── Menu.js               onOpen / onInstall
+│   ├── project/                  the three files you rewrite
+│   ├── migrations/               one file per migration, plus _template.js
+│   └── plugins/                  generic plugins, plus _plugin_template.js
+├── examples/game-config/         build overlay: project/, migrations/, plugins/
+├── scripts/
+│   ├── build.js                  produces dist/bundle.gs
+│   ├── export-gs.js              produces one .gs file per source file
+│   └── convert-ext.js            renames sources between .gs and .js
+├── test/                         Jest suites and the Apps Script mock
+└── docs/
+```
+
+## Status
+
+**0.1.0.** Below 1.0, and staying there until someone other than its author has built a
+project from it. Three things worth knowing before you adopt it:
+
+- **A bundle runs with your Google account's authority.** A container-bound Apps Script
+  executes as whoever authorises it, and the runtime declares `UrlFetchApp` and `DriveApp`
+  among its available globals because plugins may want them. Build your own bundle from
+  sources you have read; do not paste one somebody sent you. See [SECURITY.md](SECURITY.md).
+- **Coverage is not reported for `src/`.** The test harness loads sources with indirect
+  `eval` to mirror the single global scope, and neither Jest coverage provider can see
+  through that. The suites do exercise the runtime; nothing can measure it. Reporting zero
+  would be worse than reporting nothing.
+- **`examples/game-config/` is somebody's real domain**, not a stub. That is deliberate —
+  forty working columns document the conventions better than a paragraph — but it is not
+  yours, and the adaptation guide assumes you delete it.
+
+## Documentation
+
+[Getting started](docs/getting-started.md) ·
+[Adapting the template](docs/adapting-the-template.md) ·
+[Architecture](docs/architecture.md) ·
+[Migrations](docs/migrations.md) ·
+[Sheet schemas](docs/sheet-schemas.md) ·
+[Plugins](docs/plugins.md) ·
+[Deploying](docs/deploying.md) ·
+[Testing](docs/testing.md) ·
+[Troubleshooting](docs/troubleshooting.md) ·
+[Release process](docs/release-process.md)
+
+## Contributing
+
+Issues and pull requests are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md),
+[CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) and [SECURITY.md](SECURITY.md).
+
+## License
+
+[MIT](LICENSE)

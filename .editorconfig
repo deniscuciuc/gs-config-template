@@ -1,0 +1,18 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 2
+
+# Biome owns formatting for these; the values here only stop an editor fighting it before
+# anyone runs `pnpm lint:fix`. max_line_length matches formatter.lineWidth in biome.jsonc.
+[*.{js,json,jsonc}]
+max_line_length = 100
+
+# Two trailing spaces are a line break in Markdown, so trimming them changes the rendering.
+[*.md]
+trim_trailing_whitespace = false

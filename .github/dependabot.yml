@@ -1,0 +1,29 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    groups:
+      biome:
+        patterns: ["@biomejs/*"]
+      test-dependencies:
+        patterns: ["jest", "jest-*", "@jest/*", "babel-jest"]
+    labels: ["dependencies"]
+    commit-message:
+      prefix: "chore(deps)"
+
+  # Without this the actions in every workflow rot quietly — the runner only warns once an
+  # action is pinned to a Node runtime it has stopped supporting.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    groups:
+      github-actions:
+        patterns: ["*"]
+    labels: ["dependencies"]
+    commit-message:
+      prefix: "ci(deps)"

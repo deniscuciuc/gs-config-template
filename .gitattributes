@@ -1,0 +1,21 @@
+* text=auto eol=lf
+
+*.sh           text eol=lf
+*.cmd          text eol=crlf
+*.bat          text eol=crlf
+
+*.js           text eol=lf
+*.json         text eol=lf
+*.jsonc        text eol=lf
+*.yml          text eol=lf
+
+# The bundle is generated and checked in nowhere, but a release attaches one and people do
+# diff them. Treat it as the JavaScript it is rather than as an unknown binary-ish blob.
+*.gs           text eol=lf linguist-language=JavaScript
+
+# Collapses the lockfile in diffs and keeps it out of the language statistics.
+pnpm-lock.yaml -diff linguist-generated=true
+
+*.png          binary
+*.jpg          binary
+*.ico          binary

@@ -29,7 +29,7 @@
     "build": "node scripts/build.js",
     "build:example": "node scripts/build.js --overlay examples/game-config --out dist/bundle.game-config.gs",
     "export:gs": "node scripts/export-gs.js",
-    "ci": "pnpm lint:ci && pnpm test:ci && pnpm build && pnpm build:example"
+    "verify": "pnpm lint:ci && pnpm test:ci && pnpm build && pnpm build:example"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
